@@ -1,8 +1,52 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+
+    <!-- HERO SECTION -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold">📚 Smart Library System </h1>
+        <p class="lead">our books, organized. Your loans, simplified. </p>
+
+        <a class="btn btn-primary btn-lg mt-3" asp-controller="" asp-action="Index">
+           📊 Statistics
+        </a>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="row text-center">
+
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3">
+                <h4>Dashboard</h4>Overview
+                
+                <a asp-controller="" asp-action="Index" class="btn btn-outline-primary">
+                   
+                </a>
+            </div>
+            <div class="col-md-4">
+            <div class="card shadow-sm p-3">
+                <h4>Overview</h4>
+                
+                <a asp-controller="" asp-action="Index" class="btn btn-outline-primary">
+                   
+                </a>
+            </div>
+        </div>
+
+       
+
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3">
+                <h4>🔄 Emprunts</h4>
+                <p>Suivez les emprunts et les retours.</p>
+                <a asp-controller="Borrows" asp-action="Index" class="btn btn-outline-warning">
+                    Accéder
+                </a>
+            </div>
+        </div>
+
+    </div>
+
 </div>

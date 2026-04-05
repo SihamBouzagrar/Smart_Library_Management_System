@@ -11,6 +11,8 @@ public class Category
     [StringLength(250)]
     public String? Name { get; set; }
     
+    // Navigation property
+    public ICollection<Book> Books { get; set; } = new List<Book>();
 
-
+   
 }

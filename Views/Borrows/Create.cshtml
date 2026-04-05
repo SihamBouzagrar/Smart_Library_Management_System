@@ -1,0 +1,137 @@
+@model Smart_Library_Management_System.Models.Borrow
+@{
+    ViewData["Title"] = "Create Borrow";
+    var availableBooks = ViewBag.Books as List<Smart_Library_Management_System.Models.Book>;
+}
+
+<h1>Create Borrow</h1>
+<hr />
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Create" method="post" id="borrowForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group mb-3">
+                <label asp-for="BorrowName" class="control-label">Borrower Name</label>
+                <input asp-for="BorrowName" class="form-control" />
+                <span asp-validation-for="BorrowName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="BorrowDate" class="control-label">Borrow Date</label>
+                <input asp-for="BorrowDate" class="form-control" type="date"
+                       value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="BorrowDate" class="text-danger"></span>
+            </div>
+
+            <h4>Select Books</h4>
+
+            <!-- Champs cachés — remplis par JavaScript au submit -->
+            <div id="hiddenFields"></div>
+
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Select</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Category</th>
+                        <th>Available</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (availableBooks != null)
+                    {
+                        @foreach (var book in availableBooks)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox"
+                                           class="book-checkbox form-check-input"
+                                           data-bookid="@book.BookID"
+                                           data-max="@book.StockQuantity" />
+                                </td>
+                                <td>@book.Title</td>
+                                <td>@book.Author</td>
+                                <td>@book.Category?.Name</td>
+                                <td>@book.StockQuantity</td>
+                                <td>
+                                    <input type="number"
+                                           class="book-qty form-control"
+                                           data-bookid="@book.BookID"
+                                           value="1" min="1"
+                                           max="@book.StockQuantity"
+                                           style="width: 80px;"
+                                           disabled />
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+
+            <div id="noBookError" class="text-danger mb-2" style="display:none;">
+                Please select at least one book.
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        // Activer/désactiver le champ quantité selon la checkbox
+        document.querySelectorAll('.book-checkbox').forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                var bookId = this.dataset.bookid;
+                var qtyInput = document.querySelector('.book-qty[data-bookid="' + bookId + '"]');
+                qtyInput.disabled = !this.checked;
+                if (!this.checked) qtyInput.value = 1;
+            });
+        });
+
+        // Au submit : construire bookIds[] et quantities[] uniquement pour les cochés
+        document.getElementById('borrowForm').addEventListener('submit', function (e) {
+            var checked = document.querySelectorAll('.book-checkbox:checked');
+
+            if (checked.length === 0) {
+                e.preventDefault();
+                document.getElementById('noBookError').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('noBookError').style.display = 'none';
+
+            // Vider les anciens champs cachés
+            var container = document.getElementById('hiddenFields');
+            container.innerHTML = '';
+
+            checked.forEach(function (checkbox) {
+                var bookId = checkbox.dataset.bookid;
+                var qty = document.querySelector('.book-qty[data-bookid="' + bookId + '"]').value;
+
+                // Créer bookIds[]
+                var inputId = document.createElement('input');
+                inputId.type = 'hidden';
+                inputId.name = 'bookIds';
+                inputId.value = bookId;
+                container.appendChild(inputId);
+
+                // Créer quantities[]
+                var inputQty = document.createElement('input');
+                inputQty.type = 'hidden';
+                inputQty.name = 'quantities';
+                inputQty.value = qty;
+                container.appendChild(inputQty);
+            });
+        });
+    </script>
+}

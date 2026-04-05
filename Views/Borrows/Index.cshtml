@@ -1,0 +1,74 @@
+@model IEnumerable<Smart_Library_Management_System.Models.Borrow>
+
+@{
+    ViewData["Title"] = "Borrows";
+}
+
+<h2 class="mb-3">📖 Borrow List</h2>
+
+<a asp-action="Create" class="btn btn-primary mb-3">
+    ➕ New Borrow
+</a>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Borrower</th>
+            <th>Date</th>
+            <th>Return Date</th>
+            <th>Books</th>
+            <th>Total Items</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+@foreach (var borrow in Model)
+{
+        <tr>
+            <td>@borrow.BorrowName</td>
+
+            <td>@borrow.BorrowDate.ToString("yyyy-MM-dd HH:mm")</td>
+
+            <td>
+                @(borrow.ReturnDate.HasValue 
+                    ? borrow.ReturnDate.Value.ToString("yyyy-MM-dd") 
+                    : "Not returned")
+            </td>
+
+            <!-- 📚 Liste des livres -->
+            <td>
+                @if (borrow.BorrowItems != null && borrow.BorrowItems.Any())
+                {
+                    <ul class="mb-0">
+                        @foreach (var item in borrow.BorrowItems)
+                        {
+                            <li>
+                                @item.Book?.Title 
+                                (x @item.Quantity)
+                            </li>
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span class="text-muted">No items</span>
+                }
+            </td>
+
+            <!-- 🔢 Total -->
+            <td>
+                @borrow.BorrowItems?.Sum(i => i.Quantity)
+            </td>
+
+            <!-- ⚙️ Actions -->
+            <td>
+
+                <a asp-action="Create" asp-route-id="@borrow.BorrowID" class="btn btn-danger btn-sm">
+                    Create
+                </a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

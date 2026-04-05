@@ -1,0 +1,44 @@
+@model IEnumerable<Smart_Library_Management_System.Models.Book>
+@{
+    ViewData["Title"] = "Our Books";
+}
+<h2>📚 Books List</h2>
+<a asp-action="Create" class="btn btn-primary mb-3">+ Add Book</a>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Category</th>
+            <th class="text-center">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Author</td>
+                <td>@item.Price</td>
+                <td>@item.StockQuantity</td>
+                <td>@item.Category?.Name</td>
+                <td class="text-center">
+                    <a asp-controller="Books" asp-action="Details" asp-route-id="@item.BookID"
+                       class="btn btn-sm btn-info text-dark me-1">
+                        <i class="bi bi-eye-fill"></i> Details
+                    </a>
+                    <a asp-controller="Books" asp-action="Edit" asp-route-id="@item.BookID"
+                       class="btn btn-sm btn-warning me-1">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <a asp-controller="Books" asp-action="Delete" asp-route-id="@item.BookID"
+                       class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i> Delete
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

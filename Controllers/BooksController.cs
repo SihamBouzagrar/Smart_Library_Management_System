@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Smart_Library_Management_System.Models;
 using Smart_Library_Management_System.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 namespace Smart_Library_Management_System.Controllers
@@ -16,37 +17,48 @@ namespace Smart_Library_Management_System.Controllers
         }
 
         // GET: Books
+        // Affiche la liste de tous les livres
         public async Task<IActionResult> Index()
-        {
-            return View(await _context.Books.ToListAsync());
-        }
-        // GET: Books/Details/5
-        public async Task<IActionResult> Details(int? BookID)
-        {
-            if (BookID == null)
-            {
-                return NotFound();
-            }
 
-            var Book = await _context.Books
-                .FirstOrDefaultAsync(m => m.BookID == BookID);
-            if (Book == null)
-            {
-                return NotFound();
-            }
+        {
+            var books = await _context.Books
+                .Include(b => b.Category)   // Inclure la catégorie pour affichage
+                .AsNoTracking()
+                .ToListAsync();
 
-            return View(Book);
+            return View(books);
         }
 
-        // GET: Books/Create
+        // GET: Book/Details/5
+        public async Task<IActionResult> Details(int? id)  
+        {
+            if (id == null) return NotFound();
+
+            var book = await _context.Books
+                .AsNoTracking()
+                .Include(b => b.Category)
+                .FirstOrDefaultAsync(b => b.BookID == id);
+
+            if (book == null) return NotFound();
+
+            return View(book);
+        }
+      // GET: /Books/Create
+        // Affiche le formulaire de création
         public IActionResult Create()
         {
+            // ✅ Charger les catégories pour le dropdown
+            ViewBag.Categories = new SelectList(
+                _context.Category.AsNoTracking(),
+                "CategoryID",
+                "Name"
+            );
             return View();
         }
         //POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BookId, Title, Author, Price, StockQuantity")] Book book)
+        public async Task<IActionResult> Create([Bind("Title, Author, Price, StockQuantity, CategoryId")] Book book)
         {
             if (ModelState.IsValid)
             {
@@ -54,30 +66,44 @@ namespace Smart_Library_Management_System.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
+            //  Recharger les catégories si erreur
+            ViewBag.Categories = new SelectList(
+                _context.Category.AsNoTracking(),
+                "CategoryID",
+                "Name",
+                book.CategoryId //catégorie actuelle présélectionnée
+            );
             return View(book);
         }
+        // GET
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var book = await _context.Category.FindAsync(id);
-            if (book == null)
-            {
-                return NotFound();
-            }
+            // ✅ Chercher dans Books
+            var book = await _context.Books.FindAsync(id);
+
+            if (book == null) return NotFound();
+
+            // Charger les catégories pour le dropdown
+            ViewBag.Categories = new SelectList(
+             _context.Category.AsNoTracking(),
+             "CategoryID",
+             "Name",
+             book.CategoryId  //  sélectionne la catégorie actuelle du livre
+         );
             return View(book);
         }
+
+        // POST: /Books/Edit/5
+        // Reçoit les modifications et met à jour le livre
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BookId, Title, Author, Price, StockQuantity")] Book book)
+        public async Task<IActionResult> Edit(int id,
+            [Bind("BookID, Title, Author, Price, StockQuantity, CategoryId")] Book book)
         {
-            if (id != book.BookID)
-            {
-                return NotFound();
-            }
+            if (id != book.BookID) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -85,26 +111,64 @@ namespace Smart_Library_Management_System.Controllers
                 {
                     _context.Update(book);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BookExists(book.BookID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!BookExists(book.BookID)) return NotFound();
+                    else throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.Categories = new SelectList(
+                _context.Category.AsNoTracking(),
+                "CategoryID",
+                "Name",
+                book.CategoryId
+            );
+
             return View(book);
         }
-private bool BookExists(int id)
-{
-    return _context.Books.Any(e => e.BookID == id);
-}
+
+        //GET/Delete/5
+        // Affiche la page de confirmation de suppression
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books
+                .FirstOrDefaultAsync(m => m.BookID == id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return View(book);
+        }
+        //Post
+        //Supprime définitivement le livre après confirmation
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool BookExists(int id)
+        {
+            return _context.Books.Any(e => e.BookID == id);
+        }
 
     }
 }

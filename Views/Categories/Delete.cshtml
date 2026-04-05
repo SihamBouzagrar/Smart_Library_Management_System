@@ -1,0 +1,32 @@
+@model Smart_Library_Management_System.Models.Category
+
+@{
+    ViewData["Title"] = "Supprimer la catégorie";
+}
+
+<h2 class="text-danger">🗑️ Supprimer la catégorie</h2>
+<hr />
+
+<div class="alert alert-warning">
+    Êtes-vous sûr de vouloir supprimer la catégorie <strong>@Model.Name</strong> ?
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">ID</dt>
+    <dd class="col-sm-9">@Model.CategoryID</dd>
+
+    <dt class="col-sm-3">Nom</dt>
+    <dd class="col-sm-9">@Model.Name</dd>
+</dl>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="CategoryID" />
+    
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-danger">
+            🗑️ Confirmer la suppression
+        </button>
+
+        <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+    </div>
+</form>
