@@ -172,7 +172,8 @@ The application seeds initial data on startup:
 
 ## 👤 Author
 
-Siham Bouzagra <Developed as part of a university mini-project>.
+Siham Bouzagrar
+"Developed as part of a university mini-project".
 
 ---
 
