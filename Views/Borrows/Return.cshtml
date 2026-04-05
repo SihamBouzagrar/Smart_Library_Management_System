@@ -1,0 +1,53 @@
+@model Smart_Library_Management_System.Models.Borrow
+@{
+    ViewData["Title"] = "Retour Emprunt";
+}
+
+<h2>↩️ Confirmer le Retour</h2>
+<hr />
+
+<div class="alert alert-warning">
+    Êtes-vous sûr de vouloir retourner cet emprunt ? 
+    Le stock sera restauré automatiquement.
+</div>
+
+<div class="card p-4" style="max-width: 600px;">
+    <dl class="row">
+        <dt class="col-sm-4">Emprunteur</dt>
+        <dd class="col-sm-8">@Model.BorrowName</dd>
+
+        <dt class="col-sm-4">Date Emprunt</dt>
+        <dd class="col-sm-8">@Model.BorrowDate.ToString("dd/MM/yyyy")</dd>
+    </dl>
+
+    <h5 class="mt-3">📚 Livres empruntés :</h5>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Livre</th>
+                <th>Quantité</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.BorrowItems)
+            {
+                <tr>
+                    <td>@item.Book?.Title</td>
+                    <td>@item.Quantity</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <form asp-action="Return">
+        <input type="hidden" asp-for="BorrowID" />
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-success">
+                ✅ Confirmer le Retour
+            </button>
+            <a asp-action="Index" class="btn btn-secondary">
+                ❌ RollBack
+            </a>
+        </div>
+    </form>
+</div>

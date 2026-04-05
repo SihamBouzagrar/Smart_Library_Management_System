@@ -235,6 +235,74 @@ namespace Smart_Library_Management_System.Controllers
                 return BadRequest();
             }
         }
+        // GET: /Borrows/Return/5
+public async Task<IActionResult> Return(int? id)
+{
+    if (id == null) return NotFound();
+
+    var borrow = await _context.Borrows
+        .Include(b => b.BorrowItems)
+        .ThenInclude(bi => bi.Book)
+        .FirstOrDefaultAsync(b => b.BorrowID == id);
+
+    if (borrow == null) return NotFound();
+
+    // Vérifier si déjà retourné
+    if (borrow.ReturnDate != null)
+    {
+        TempData["Error"] = "Cet emprunt a déjà été retourné.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    return View(borrow);
+}
+
+// POST: /Borrows/Return/5
+[HttpPost, ActionName("Return")]
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> ReturnConfirmed(int id)
+{
+    using var transaction = await _context.Database.BeginTransactionAsync();
+    try
+    {
+        var borrow = await _context.Borrows
+            .Include(b => b.BorrowItems)
+            .FirstOrDefaultAsync(b => b.BorrowID == id);
+
+        if (borrow == null) return NotFound();
+
+        if (borrow.ReturnDate != null)
+        {
+            TempData["Error"] = "Cet emprunt a déjà été retourné.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // 1️⃣ Remettre le stock pour chaque livre
+        foreach (var item in borrow.BorrowItems)
+        {
+            var book = await _context.Books.FindAsync(item.BookID);
+            if (book != null)
+                book.StockQuantity += item.Quantity; // ✅ stock restauré
+        }
+
+        // 2️⃣ Enregistrer la date de retour
+        borrow.ReturnDate = DateTime.Now;
+
+        // 3️⃣ Sauvegarder tout
+        await _context.SaveChangesAsync();
+        await transaction.CommitAsync();
+
+        TempData["Success"] = "Retour effectué avec succès. Stock mis à jour.";
+        return RedirectToAction(nameof(Index));
+    }
+    catch (Exception ex)
+    {
+        // 4️⃣ Rollback en cas d'erreur
+        await transaction.RollbackAsync();
+        TempData["Error"] = "Erreur lors du retour : " + ex.Message;
+        return RedirectToAction(nameof(Index));
+    }
+}
         private bool BorrowExists(int id)
         {
             return _context.Borrows.Any(e => e.BorrowID == id);

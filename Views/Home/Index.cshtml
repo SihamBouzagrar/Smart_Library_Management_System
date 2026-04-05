@@ -6,47 +6,56 @@
 
     <!-- HERO SECTION -->
     <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold">📚 Smart Library System </h1>
-        <p class="lead">our books, organized. Your loans, simplified. </p>
-
-        <a class="btn btn-primary btn-lg mt-3" asp-controller="" asp-action="Index">
-           📊 Statistics
-        </a>
+        <h1 class="display-4 fw-bold">📚 Smart Library System</h1>
+        <p class="lead text-muted">Your books, organized. Your loans, simplified.</p>
+        <div class="d-flex justify-content-center gap-2 mt-3">
+            <a asp-controller="Books" asp-action="Index" class="btn btn-primary btn-lg">
+                📖 View Books
+            </a>
+            <a asp-controller="Borrows" asp-action="Create" class="btn btn-success btn-lg">
+                ➕ New Borrow
+            </a>
+        </div>
     </div>
 
-    <!-- FEATURES -->
-    <div class="row text-center">
+    <!-- FEATURES CARDS -->
+    <div class="row text-center g-4">
 
+        <!-- Books -->
         <div class="col-md-4">
-            <div class="card shadow-sm p-3">
-                <h4>Dashboard</h4>Overview
-                
-                <a asp-controller="" asp-action="Index" class="btn btn-outline-primary">
-                   
-                </a>
-            </div>
-            <div class="col-md-4">
-            <div class="card shadow-sm p-3">
-                <h4>Overview</h4>
-                
-                <a asp-controller="" asp-action="Index" class="btn btn-outline-primary">
-                   
+            <div class="card shadow-sm p-4 h-100">
+                <div class="mb-3" style="font-size: 2.5rem;">📚</div>
+                <h4 class="fw-bold">Books</h4>
+                <p class="text-muted">Browse and manage all available books in the library.</p>
+                <a asp-controller="Books" asp-action="Index" class="btn btn-outline-primary mt-auto">
+                    Enter
                 </a>
             </div>
         </div>
 
-       
-
+        <!-- Categories -->
         <div class="col-md-4">
-            <div class="card shadow-sm p-3">
-                <h4>🔄 Emprunts</h4>
-                <p>Suivez les emprunts et les retours.</p>
-                <a asp-controller="Borrows" asp-action="Index" class="btn btn-outline-warning">
-                    Accéder
+            <div class="card shadow-sm p-4 h-100">
+                <div class="mb-3" style="font-size: 2.5rem;">🗂️</div>
+                <h4 class="fw-bold">Categories</h4>
+                <p class="text-muted">Organize books by categories for easier navigation.</p>
+                <a asp-controller="Categories" asp-action="Index" class="btn btn-outline-secondary mt-auto">
+                   Enter
+                </a>
+            </div>
+        </div>
+
+        <!-- Borrows -->
+        <div class="col-md-4">
+            <div class="card shadow-sm p-4 h-100">
+                <div class="mb-3" style="font-size: 2.5rem;">🔄</div>
+                <h4 class="fw-bold">Borrows</h4>
+                <p class="text-muted">Track all borrow operations and returns.</p>
+                <a asp-controller="Borrows" asp-action="Index" class="btn btn-outline-warning mt-auto">
+                   Enter
                 </a>
             </div>
         </div>
 
     </div>
-
 </div>
