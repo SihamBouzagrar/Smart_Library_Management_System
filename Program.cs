@@ -4,20 +4,27 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Add ALL services first
+// Add ALL services first
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllersWithViews();
 
-// ✅ Build AFTER all services are registered
+//  Build AFTER all services are registered
 var app = builder.Build();
+
+
+
 
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var context = services.GetRequiredService<LibraryDbContext>();
+
+    // Appel de la méthode d'initialisation : crée les tables si elles n'existent pas
+    // et insère les données de démarrage (seed data) si la base est vide
+
     DbInitializer.Initialize(context);
 }
 // Configure the HTTP request pipeline.

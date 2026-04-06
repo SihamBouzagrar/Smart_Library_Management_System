@@ -1,0 +1,95 @@
+@model Smart_Library_Management_System.Models.Book
+
+@{
+    ViewData["Title"] = "Search";
+}
+<h1>Search</h1>
+
+<!-- ========== RECHERCHE PAR TITRE ========== -->
+<div class="row mb-3">
+    <div class="col-md-4">
+        <form asp-action="Create" method="get">
+            <div class="form-group">
+                <label class="control-label">Search by Title</label>
+                <div class="input-group">
+                    <input type="text"
+                           name="searchTitle"
+                           value="@ViewBag.SearchTitle"
+                           class="form-control"
+                           placeholder="Ex: Clean Code..." />
+                    <button type="submit" class="btn btn-outline-primary">Chercher</button>
+                    @if (!string.IsNullOrEmpty(ViewBag.SearchTitle as string))
+                    {
+                        <a asp-action="Create" class="btn btn-outline-secondary">X</a>
+                    }
+                </div>
+            </div>
+        </form>
+
+        <!-- Résultats -->
+        @if (ViewBag.SearchResults != null)
+        {
+            var results = ViewBag.SearchResults as List<Smart_Library_Management_System.Models.Book>;
+            @if (results.Count == 0)
+            {
+                <div class="text-danger mt-1"> Aucun ouvrage existe "@ViewBag.SearchTitle".</div>
+            }
+            else
+            {
+                <ul class="list-group mt-2">
+                    @foreach (var book in results)
+                    {
+                        <li class="list-group-item">
+                            <strong>@book.Title</strong> — @book.Author
+                        </li>
+                    }
+                </ul>
+            }
+        }
+    </div>
+</div>
+
+<hr />
+
+<!-- ========== FORMULAIRE DE CRÉATION ========== -->
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Author" class="control-label"></label>
+                <input asp-for="Author" class="form-control" />
+                <span asp-validation-for="Author" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="StockQuantity" class="control-label"></label>
+                <input asp-for="StockQuantity" class="form-control" />
+                <span asp-validation-for="StockQuantity" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CategoryId" class="control-label">Catégorie</label>
+                <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-select">
+                    <option value="">-- Choisir une catégorie --</option>
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>

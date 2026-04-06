@@ -17,20 +17,25 @@ namespace Smart_Library_Management_System.Controllers
         }
 
         // GET: Books
-        // Affiche la liste de tous les livres
-        public async Task<IActionResult> Index()
-
+        // Affiche la liste de tous les livres// GET: Books/Index
+        public IActionResult Index(string searchTitle)
         {
-            var books = await _context.Books
-                .Include(b => b.Category)   // Inclure la catégorie pour affichage
-                .AsNoTracking()
-                .ToListAsync();
+            var books = _context.Books
+                                .Include(b => b.Category)
+                                .AsQueryable();
 
-            return View(books);
+            // Filtre uniquement si un terme est saisi
+            if (!string.IsNullOrEmpty(searchTitle))
+            {
+                books = books.Where(b => b.Title.Contains(searchTitle));
+                ViewBag.SearchTitle = searchTitle;
+            }
+
+            return View(books.ToList());
         }
 
         // GET: Book/Details/5
-        public async Task<IActionResult> Details(int? id)  
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
@@ -43,7 +48,7 @@ namespace Smart_Library_Management_System.Controllers
 
             return View(book);
         }
-      // GET: /Books/Create
+        // GET: /Books/Create
         // Affiche le formulaire de création
         public IActionResult Create()
         {

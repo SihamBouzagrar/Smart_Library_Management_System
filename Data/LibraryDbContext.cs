@@ -32,11 +32,14 @@ namespace Smart_Library_Management_System.Data
                 .HasForeignKey(b => b.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<BorrowItem>()
-    .HasOne(bi => bi.Book)
-.WithMany(b => b.BorrowItems)
-    .HasForeignKey(bi => bi.BookID)
-    .OnDelete(DeleteBehavior.Restrict);
+
+{
+    modelBuilder.Entity<BorrowItem>()
+        .HasOne(bi => bi.Book)
+        .WithMany(b => b.BorrowItems)
+        .HasForeignKey(bi => bi.BookID)
+        .OnDelete(DeleteBehavior.Cascade);
+}
 
            
         }
